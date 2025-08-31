@@ -1,126 +1,421 @@
-<!DOCTYPE html>
-<html lang="es">
+<!doctype html>
+<html lang="es" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canjeo de Estampas</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
-        body {
-            font-family: 'Comic Neue', cursive;
-            text-align: center;
-            background: url('./imagenes/fondo.jpg') no-repeat center center fixed;
-            background-size: cover;
-            color: white;
-        }
-        .sticker {
-            display: inline-block;
-            margin: 20px;
-            padding: 10px;
-            border-radius: 10px;
-            text-align: center;
-            position: relative;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 15px;
-            animation: glowEffect 2s infinite alternate;
-        }
-        .sticker img {
-            width: 120px;
-            height: 120px;
-            border-radius: 10px;
-            animation: stickerGlow 1.5s infinite alternate;
-        }
-        .sticker button {
-            margin-top: 10px;
-            padding: 5px 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .raro { border: 4px solid blue; background-color: #d0e1ff; }
-        .epico { border: 4px solid purple; background-color: #e1c0ff; }
-        .legendario { border: 4px solid orange; background-color: #ffdbac; }
-        .mitico { border: 4px solid red; background-color: #ffc0c0; }
-        .exclusivo { border: 4px solid gold; background-color: #fff7c0; }
-        .superexclusivo { border: 4px solid black; background-color: #ffcc00; animation: superGlow 1.5s infinite alternate; }
-
-        @keyframes glowEffect {
-            0% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
-            100% { box-shadow: 0 0 30px rgba(255, 255, 255, 0.8); }
-        }
-
-        @keyframes stickerGlow {
-            0% { filter: brightness(1); }
-            100% { filter: brightness(1.5); }
-        }
-        
-        @keyframes superGlow {
-            0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-            100% { box-shadow: 0 0 30px rgba(255, 215, 0, 1); }
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula Digital — Consulta para familias</title>
+<style>
+  :root{
+    --bg:#f7f9ff; --card:#ffffff; --text:#0b1020; --muted:#526072; --accent:#2b6bff;
+    --bd:#d9e3ff; --ok:#0ea371; --warn:#f0b429; --bad:#ef4444;
+    --barbg: color-mix(in oklab, var(--card) 80%, transparent);
+  }
+  [data-theme="dark"]{
+    --bg:#0c1220; --card:#101a34; --text:#eaf3ff; --muted:#93a6bc; --accent:#6aa9ff;
+    --bd:#223056; --ok:#1ec48d; --warn:#ffce3a; --bad:#ff7a7a; --barbg:#0a1330;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial;background:var(--bg);color:var(--text)}
+  header{position:sticky;top:0;z-index:10;background:color-mix(in oklab, var(--card) 90%, transparent);
+    backdrop-filter:blur(6px); border-bottom:1px solid var(--bd); padding:14px 16px; display:flex; gap:12px; align-items:center}
+  header h1{font-size:18px;margin:0}
+  header .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .btn{border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer;touch-action:manipulation}
+  .btn.primary{background:var(--accent);color:white}
+  .btn.ghost{background:transparent;border:1px solid var(--bd);color:var(--text)}
+  .btn.small{padding:8px 10px;border-radius:10px}
+  main{max-width:960px;margin:auto;padding:18px}
+  .card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px}
+  .hero{display:grid;gap:12px}
+  .input{display:grid;grid-template-columns:1fr auto auto;gap:8px}
+  @media (max-width:640px){.input{grid-template-columns:1fr;}}
+  .input input{padding:14px 16px;border:1px solid var(--bd);border-radius:12px;background:white;font-size:16px}
+  [data-theme="dark"] .input input{background:#0d152b;color:var(--text)}
+  .hint{color:var(--muted);font-size:13px}
+  h2{margin:8px 0 6px 0}
+  h3{margin:10px 0 8px 0}
+  .grid2{display:grid;grid-template-columns:1fr;gap:12px}
+  @media (min-width:840px){.grid2{grid-template-columns:1fr 1fr}}
+  .list{display:grid;gap:8px}
+  details{border:1px solid var(--bd);border-radius:12px;padding:8px 10px;background:color-mix(in oklab, var(--card) 94%, transparent)}
+  summary{cursor:pointer;font-weight:700}
+  .stat{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:640px){.stat{grid-template-columns:1fr}}
+  .k{color:var(--muted);font-size:14px}
+  .v{font-weight:900;font-size:20px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  .chip{border:1px solid var(--bd);background:transparent;border-radius:999px;padding:10px 14px;font-weight:700;cursor:pointer}
+  .chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .topbar{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .badgeb{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--bd);border-radius:999px;padding:6px 10px;font-size:12px}
+  .footer-note{margin-top:12px;font-size:12px;color:var(--muted)}
+  .chart{display:grid;gap:10px;margin-top:14px}
+  .bar{position:relative;border-radius:12px;border:1px solid var(--bd);background:var(--barbg);height:44px;display:flex;align-items:center;overflow:hidden}
+  .bar::before{content:"";position:absolute;inset:0;transform-origin:left center;transform:scaleX(var(--pct,0));}
+  .bar.fal::before{background:linear-gradient(90deg, var(--bad), #ff9b9b)}
+  .bar.tar::before{background:linear-gradient(90deg, var(--warn), #ffe08a)}
+  .bar.ati::before{background:linear-gradient(90deg, var(--ok), #a7efd5)}
+  .bar .lbl{position:relative;z-index:1;padding-left:12px;font-weight:800}
+  .bar .val{position:absolute;right:10px;z-index:1;font-weight:900}
+  .linkbtn{display:inline-block;margin-left:8px;border:1px solid var(--bd);padding:4px 8px;border-radius:999px;font-size:12px;text-decoration:none}
+</style>
 </head>
 <body>
-    <h1>Canjeo de Estampas</h1>
-    <h2>Estampas del Día</h2>
-    <div id="stickerContainer"></div>
-    <script>
-        function obtenerEstampasDelDia() {
-            return [
-                { id: 1, nombre: "Taco Feliz", costo: 800, img: "./imagenes/taco_feliz.jpeg", rareza: "raro" },
-                { id: 2, nombre: "Pollito Amarillo", costo: 900, img: "./imagenes/pollito_amarillo.png", rareza: "epico" },
-                { id: 3, nombre: "Huevo Tierno", costo: 1000, img: "./imagenes/huevo_tierno.png", rareza: "legendario" },
-                { id: 4, nombre: "Gato Fresa", costo: 1100, img: "./imagenes/gato_fresa.png", rareza: "mitico" },
-                { id: 5, nombre: "Capibara Estrella", costo: 1200, img: "./imagenes/capibara_estrella.jpg", rareza: "exclusivo" },
-                { id: 6, nombre: "Aguacate Kawaii", costo: 1300, img: "./imagenes/aguacate_kawaii.jpg", rareza: "superexclusivo" }
-            ];
-        }
+<header>
+  <h1>👪 Aula Digital — Consulta para familias</h1>
+  <div class="right">
+    <button id="themeBtn" class="btn ghost small" title="Cambiar tema">🌙 Oscuro</button>
+  </div>
+</header>
 
-        function renderStickers() {
-            const container = document.getElementById("stickerContainer");
-            container.innerHTML = "";
-            let stickers = obtenerEstampasDelDia();
-            stickers.forEach(sticker => {
-                let div = document.createElement("div");
-                div.className = `sticker ${sticker.rareza}`;
-                div.innerHTML = `
-                    <img src="${sticker.img}" alt="${sticker.nombre}"><br>
-                    <strong>${sticker.nombre}</strong><br>
-                    <span style="font-size: 18px; color: black;">${sticker.rareza.toUpperCase()}</span><br>
-                    Costo: ${sticker.costo} puntos<br>
-                    <button onclick="canjear('${sticker.img}', ${sticker.costo})">Canjear</button>
-                `;
-                container.appendChild(div);
-            });
-        }
+<main>
+  <!-- Acceso -->
+  <section class="card hero" id="search-card">
+    <div>
+      <h2>Encuentre el progreso de su hijo(a)</h2>
+      <p class="hint">Escriba el <b>ID escolar</b> que le proporcionó la escuela para consultar tareas y asistencia.</p>
+    </div>
+    <div class="input">
+      <input id="idInput" autocomplete="off" placeholder="Pegue aquí el ID entregado por la escuela" inputmode="latin-name">
+      <button id="goBtn" class="btn primary">Buscar alumno</button>
+      <button id="saveBtn" class="btn ghost">Recordar ID en este dispositivo</button>
+    </div>
+    <div class="hint">Este sitio <u>solo lee</u> los datos. No modifica nada en la libreta digital.</div>
+  </section>
 
-        function canjear(imagen, costo) {
-            let cantidadPuntos = prompt(`Ingrese la cantidad de puntos para canjear esta estampa (Costo: ${costo} puntos):`);
-            if (cantidadPuntos !== null && !isNaN(cantidadPuntos) && cantidadPuntos.trim() !== "") {
-                cantidadPuntos = parseInt(cantidadPuntos);
-                if (cantidadPuntos >= costo) {
-                    imprimir(imagen);
-                } else {
-                    alert(`Necesitas al menos ${costo} puntos para canjear esta estampa.`);
-                }
-            } else {
-                alert("Entrada no válida. Intente nuevamente.");
-            }
-        }
+  <!-- Resultados -->
+  <section id="student-view" style="display:none; margin-top:14px">
+    <div class="card">
+      <div class="topbar">
+        <div>
+          <h2 id="alumno-nombre">Alumno</h2>
+          <div class="hint" id="alumno-id"></div>
+          <div class="hint" id="grupo-label" style="margin-top:4px"></div>
+          <div id="tri-subtitle" class="hint" style="margin-top:6px">Resumen de Todo</div>
+        </div>
+        <div>
+          <button id="backBtn" class="btn ghost">Cambiar de alumno</button>
+        </div>
+      </div>
 
-        function imprimir(imagen) {
-            let ventana = window.open("", "_blank");
-            ventana.document.write("<html><head><title>Impresión de Estampas</title><style>");
-            ventana.document.write("@page { size: landscape; margin: 0; }"); // Ajuste para modo horizontal
-            ventana.document.write("body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }");
-            ventana.document.write("img { width: 100%; height: auto; max-height: 100vh; }");
-            ventana.document.write("</style></head><body>");
-            ventana.document.write(`<img src="${imagen}">`);
-            ventana.document.write("</body></html>");
-            ventana.document.close();
-            setTimeout(() => { ventana.print(); ventana.close(); }, 500);
-        }
+      <div style="margin-top:10px">
+        <div class="chips" id="tri-chips"></div>
+        <div class="hint">Vea <b>Todo</b> o sólo un trimestre: <b>Trimestre 1</b> (M1), <b>Trimestre 2</b> (M2), <b>Trimestre 3</b> (M3).</div>
+      </div>
 
-        renderStickers();
-    </script>
+      <div class="stat" style="margin-top:12px">
+        <div><div class="k">Cumplimiento (trimestre elegido)</div><div class="v" id="stat-cump-tri">–</div></div>
+        <div><div class="k">Totales — Trimestre</div><div class="v" id="stat-tot-tri">–</div></div>
+        <div><div class="k">Asistencia — semana</div><div class="v" id="stat-aswk">–</div></div>
+        <div><div class="k">Asistencia — 30 días</div><div class="v" id="stat-as30">–</div></div>
+        <div><div class="k">Asistencia total (histórica)</div><div class="v" id="stat-asHist">–</div></div>
+        <div><div class="k">Faltas (históricas)</div><div class="v" id="stat-faltHist">–</div></div>
+      </div>
+
+      <div class="chart" aria-label="Resumen visual del trimestre">
+        <div class="bar fal" id="bar-fal"><span class="lbl">⏳ Faltantes</span><span class="val" id="val-fal">0</span></div>
+        <div class="bar tar" id="bar-tar"><span class="lbl">🕒 Tarde</span><span class="val" id="val-tar">0</span></div>
+        <div class="bar ati" id="bar-ati"><span class="lbl">✅ A tiempo</span><span class="val" id="val-ati">0</span></div>
+      </div>
+
+      <p class="footer-note" style="margin-top:10px">
+        Importante: si alguna inasistencia fue <b>justificada</b>, no se preocupe; aunque aparezca aquí como falta, la escuela la revisa y no afecta indebidamente.
+      </p>
+    </div>
+
+    <div class="grid2" style="margin-top:12px">
+      <div class="card">
+        <h3>⏳ Trabajos faltantes</h3>
+        <div id="faltantes" class="list"></div>
+      </div>
+      <div class="card">
+        <h3>🕒 Entregados tarde</h3>
+        <div id="tarde" class="list"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <h3>✅ Entregados (a tiempo)</h3>
+      <div id="atiempo" class="list"></div>
+    </div>
+
+    <p class="footer-note">Si detecta algún dato que no coincide, contacte a la escuela para verificar la libreta digital.</p>
+  </section>
+</main>
+
+<script>
+/* ====== CONFIG (TU HOJA 5to B) ====== */
+const SHEET_ID = '19godSKA4Yx9vNHrZpz6ReDeQFovMzlN7X0y6QX-BA6s';
+const GIDS = {
+  puntos:     '0',          // (no se usa aquí, pero lo dejamos correcto)
+  asistencia: '1131375842',
+  registro:   '1025312588',
+  presets:    '495888198'
+};
+const GROUP_LABEL = '5to B'; // fijo en esta página
+
+/* === JSON de evidencias (opcional) === */
+const LINKS_JSON = 'data/links_5B.json';   // si no existe, se ignora
+let LINKMAP = {};                          // { uid: {urls:[...], note:""} }
+
+/* ====== UTIL ====== */
+const $=s=>document.querySelector(s);
+const strip=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const norm=s=>strip(String(s||'').toLowerCase()).replace(/\s+/g,' ').trim();
+const pad=n=>String(n).padStart(2,'0'); const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+function normDate(s){const t=String(s||'').trim(); if(!t)return''; const a=/^(\d{4}-\d{2}-\d{2})/.exec(t); if(a) return a[1];
+  const b=/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/.exec(t); if(b){const d=new Date(+b[3],b[2]-1,+b[1]); return ymd(d);} const d=new Date(t); if(!isNaN(+d)) return ymd(d); return'';}
+function isPresent(v){const s=norm(v); if(!s) return false; if(!Number.isNaN(+s)) return (+s)>0; const s2=s.replace(/\s+/g,''); if(/^1\(100%?\)$/.test(s2)) return true;
+  return ['x','✓','✔','p','presente','si','sí','s','ok','true','asistio','asistió'].includes(s);}
+function getDateCols(cols){return cols.map((c,i)=>normDate(String(c).trim())?i:-1).filter(i=>i>=0);}
+
+/* ====== LECTORES ====== */
+let _cbSeq=0;
+function fetchGViz(sheetId, sheetName){
+  return new Promise((resolve,reject)=>{
+    const cb=`__cb_${Date.now()}_${++_cbSeq}`;
+    const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?headers=1&tqx=out:json;responseHandler:${cb}&sheet=${encodeURIComponent(sheetName)}&ts=${Date.now()}`;
+    const sc=document.createElement('script');
+    const timeout=setTimeout(()=>{cleanup();reject(new Error('Timeout'))},12000);
+    function cleanup(){clearTimeout(timeout); delete window[cb]; if(sc.parentNode) sc.parentNode.removeChild(sc); }
+    window[cb]=(json)=>{cleanup(); try{
+      let cols=(json.table?.cols||[]).map(c=>String(c.label||'').trim());
+      let rows=(json.table?.rows||[]).map(r=>(r.c||[]).map(c=>c?.v ?? ''));
+      const empty=cols.filter(c=>!c||/^[A-Z]$/.test(c)).length;
+      if(empty>=Math.ceil(cols.length*0.5)&&rows.length){cols=rows[0].map(v=>String(v??'')); rows=rows.slice(1);}
+      resolve({cols,rows});
+    }catch(e){reject(e)} };
+    sc.onerror=()=>{cleanup();reject(new Error('Error GViz'))};
+    sc.src=url; document.head.appendChild(sc);
+  });
+}
+async function fetchCSVByGid(sheetId,gid){
+  const url=`https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}&ts=${Date.now()}`;
+  const res=await fetch(url,{cache:'no-store'}); if(!res.ok) throw new Error('CSV '+gid);
+  const txt=await res.text(); const rows=parseCSV(txt); const cols=(rows.shift()||[]).map(v=>String(v??'')); return {cols,rows};
+}
+function parseCSV(t){
+  const rows=[]; let row=[], cur='', q=false;
+  for(let i=0;i<t.length;i++){const ch=t[i],nx=t[i+1];
+    if(q){ if(ch==='"'&&nx==='"'){cur+='"';i++;} else if(ch==='"'){q=false;} else cur+=ch; }
+    else { if(ch==='"'){q=true;} else if(ch===','){row.push(cur);cur='';}
+      else if(ch==='\n'||ch==='\r'){ if(cur!==''||row.length){row.push(cur);rows.push(row);row=[];cur='';} }
+      else cur+=ch; } }
+  if(cur!==''||row.length){row.push(cur);rows.push(row);} return rows;
+}
+
+/* ====== PARSERS ====== */
+function parseRegistro(cols,rows){
+  const iUID=cols.findIndex(c=>/uid[_ ]?preset/i.test(c));
+  const iF=cols.findIndex(c=>/^fecha$/i.test(c));
+  const iFO=cols.findIndex(c=>/fecha.*objetivo/i.test(c));
+  const iID=cols.findIndex(c=>/^(id|matric)/i.test(c));
+  const iNom=cols.findIndex(c=>/^nombre/i.test(c));
+  const iMat=cols.findIndex(c=>/^materia$/i.test(c));
+  const iNum=cols.findIndex(c=>/n.?trabajo|n.? ?°/i.test(c));
+  const iOri=cols.findIndex(c=>/^origen$/i.test(c));
+  const iPag=cols.findIndex(c=>/^p[aá]gina/i.test(c));
+  const iPts=cols.findIndex(c=>/^puntos$/i.test(c));
+  const iAtr=cols.findIndex(c=>/atraso/i.test(c));
+  const iMom=cols.findIndex(c=>/^momento$/i.test(c));
+  const iNomT=cols.findIndex(c=>/nombre.*trabajo/i.test(c));
+  return rows.map(r=>{
+    const fecha=String(r[iF]??'').trim(); const fo=String((iFO>=0?r[iFO]:'')??'').trim()||fecha;
+    const atraso = (()=>{ if(iAtr>=0 && r[iAtr]!=='' && r[iAtr]!=null) return +r[iAtr]||0;
+      const d=new Date(fecha), o=new Date(fo); if(isNaN(+d)||isNaN(+o)) return 0; return Math.max(0, Math.round((d-o)/86400000));})();
+    return { uidPreset:String((iUID>=0?r[iUID]:'')??'').trim(), fecha, fechaObjetivo:fo, id:String((iID>=0?r[iID]:'')??'').trim(),
+      nombre:String((iNom>=0?r[iNom]:'')??'').trim(), materia:String((iMat>=0?r[iMat]:'')??'').trim(),
+      numero:String((iNum>=0?r[iNum]:'')??'').trim(), origen:String((iOri>=0?r[iOri]:'')??'').trim(),
+      pagina:String((iPag>=0?r[iPag]:'')??'').trim(), puntos:+((iPts>=0?r[iPts]:0)??0)||0,
+      atrasoDias:atraso, momento:String((iMom>=0?r[iMom]:'')??'').trim(), nombreTrabajo:String((iNomT>=0?r[iNomT]:'')??'').trim()
+    };
+  });
+}
+function parsePresets(cols,rows){
+  const iUID=cols.findIndex(c=>/uid[_ ]?preset/i.test(c));
+  const iFO=cols.findIndex(c=>/fecha.*objetivo/i.test(c));
+  const iMom=cols.findIndex(c=>/^momento$/i.test(c));
+  const iMat=cols.findIndex(c=>/^materia$/i.test(c));
+  const iNum=cols.findIndex(c=>/n.?trabajo|n.? ?°/i.test(c));
+  const iOri=cols.findIndex(c=>/^origen$/i.test(c));
+  const iPag=cols.findIndex(c=>/^p[aá]gina/i.test(c));
+  const iNom=cols.findIndex(c=>/nombre.*trabajo/i.test(c));
+  return rows.map(r=>({uid:String((iUID>=0?r[iUID]:'')??'').trim(),
+    fechaObjetivo:String((iFO>=0?r[iFO]:'')??'').trim(), momento:String((iMom>=0?r[iMom]:'')??'').trim(),
+    materia:String((iMat>=0?r[iMat]:'')??'').trim(), numero:String((iNum>=0?r[iNum]:'')??'').trim(),
+    origen:String((iOri>=0?r[iOri]:'')??'').trim(), pagina:String((iPag>=0?r[iPag]:'')??'').trim(),
+    nombreTrabajo:String((iNom>=0?r[iNom]:'')??'').trim()})).filter(p=>p.uid);
+}
+
+/* ====== ASISTENCIA ====== */
+function asistenciaAlumno(cols,rows,ref,start,end){
+  const iId=cols.findIndex(c=>/^(id|matric)/i.test(c));
+  const iNom=cols.findIndex(c=>/^nombre/i.test(c));
+  let row=null; if(iId>=0 && ref.id) row=rows.find(r=>norm(r[iId])===norm(ref.id));
+  if(!row && iNom>=0 && ref.nombre) row=rows.find(r=>norm(r[iNom])===norm(ref.nombre));
+  if(!row) return {present:0,total:0,row:null};
+  const dateCols=getDateCols(cols).filter(i=>{const d=normDate(cols[i]); return d && d>=start && d<=end;});
+  let present=0,total=0; for(const i of dateCols){const v=row[i]; if(v!==null&&v!==''){ total++; if(isPresent(v)) present++; } }
+  return {present,total,row};
+}
+function asistenciaHistorica(cols,rows,ref){
+  const iId=cols.findIndex(c=>/^(id|matric)/i.test(c));
+  const iNom=cols.findIndex(c=>/^nombre/i.test(c));
+  let row=null; if(iId>=0 && ref.id) row=rows.find(r=>norm(r[iId])===norm(ref.id));
+  if(!row && iNom>=0 && ref.nombre) row=rows.find(r=>norm(r[iNom])===norm(ref.nombre));
+  if(!row) return {present:0,total:0};
+  const dateCols=getDateCols(cols);
+  let present=0,total=0; for(const i of dateCols){const v=row[i]; if(v!==null&&v!==''){ total++; if(isPresent(v)) present++; } }
+  return {present,total};
+}
+function weekRange(d){const day=d.getDay(); const diff=(day===0?-6:1-day); const mon=new Date(d); mon.setDate(d.getDate()+diff); mon.setHours(0,0,0,0);
+  const fri=new Date(mon); fri.setDate(mon.getDate()+4); return [ymd(mon), ymd(fri)]; }
+
+/* ====== CARGA Y RENDER ====== */
+async function loadBlock(name){
+  const names = {asistencia:'Asistencia', registro:'Registro de trabajos', presets:'Presets'};
+  try{ return await fetchGViz(SHEET_ID, names[name]); }
+  catch{ return await fetchCSVByGid(SHEET_ID, GIDS[name]); }
+}
+
+/* === Enlaces de evidencia (opcional) === */
+async function loadLinks(){
+  try{
+    const res=await fetch(LINKS_JSON,{cache:'no-store'});
+    if(res.ok){
+      const j=await res.json();
+      if(j?.items) LINKMAP=j.items;
+    }
+  }catch{ /* si no existe, seguimos sin enlaces */ }
+}
+
+let ALL = {faltantes:[], tarde:[], atiempo:[], presets:[]};
+let TRI='ALL';
+
+function setTriChips(){
+  const host=$('#tri-chips');
+  const opts=[['ALL','Todo'],['M1','Trimestre 1'],['M2','Trimestre 2'],['M3','Trimestre 3']];
+  host.innerHTML=opts.map(([v,l])=>`<button class="chip ${TRI===v?'active':''}" data-v="${v}">${l}</button>`).join('');
+  for(const b of host.querySelectorAll('.chip')) b.onclick=()=>{TRI=b.getAttribute('data-v'); setTriChips(); renderLists();};
+  $('#tri-subtitle').textContent='Resumen de '+({ALL:'Todo',M1:'Trimestre 1',M2:'Trimestre 2',M3:'Trimestre 3'}[TRI]);
+}
+function byTri(list){ if(TRI==='ALL') return list; return list.filter(x=>String(x.momento||'').toUpperCase()===TRI); }
+function renderBarChart({faltantes,tarde,atiempo}){
+  const max=Math.max(faltantes,tarde,atiempo,1);
+  const set=(id,val)=>{ const el=$(id); el.style.setProperty('--pct',(val/max).toFixed(3)); el.querySelector('.val').textContent=val; };
+  set('#bar-fal',faltantes); set('#bar-tar',tarde); set('#bar-ati',atiempo);
+}
+function linksFor(uid){
+  const rec = LINKMAP?.[uid];
+  if(!rec) return '';
+  const arr = Array.isArray(rec.urls) ? rec.urls : (rec.url?[rec.url]:[]);
+  if(!arr.length) return '';
+  return arr.map((u,i)=>`<a class="linkbtn" href="${u}" target="_blank" rel="noopener">📷 Ver evidencia ${arr.length>1?i+1:''}</a>`).join('');
+}
+function renderLists(){
+  const falt=byTri(ALL.faltantes), tar=byTri(ALL.tarde), ati=byTri(ALL.atiempo);
+  const totalTri = byTri(ALL.presets).length;
+  const hechosTri = tar.length + ati.length;
+
+  $('#stat-cump-tri').textContent = totalTri? `${Math.round(hechosTri/totalTri*100)}%` : '–';
+  $('#stat-tot-tri').textContent  = `Faltantes ${falt.length} · Tarde ${tar.length} · A tiempo ${ati.length} · Trabajos totales ${totalTri}`;
+  renderBarChart({faltantes:falt.length, tarde:tar.length, atiempo:ati.length});
+
+  const renderItem = (t) => {
+    const mom = t.momento ? ` · ${t.momento}` : '';
+    const fecha = t.fechaObjetivo ? ` · ${normDate(t.fechaObjetivo)}` : '';
+    const nom = t.nombreTrabajo ? ` · <i>${t.nombreTrabajo}</i>` : '';
+    const kLink = linksFor(t.uid);
+    return `<details>
+      <summary><b>${t.materia||'–'}</b> — ${t.numero||'–'} (${t.origen||'–'}${t.pagina?' · p.'+t.pagina:''})${nom}${fecha}${mom}${kLink? ' ' + kLink : ''}</summary>
+    </details>`;
+  };
+  $('#faltantes').innerHTML = falt.length ? falt.map(renderItem).join('') : '<div class="hint">No hay trabajos faltantes 💙</div>';
+  $('#tarde').innerHTML     = tar.length   ? tar.map(renderItem).join('')   : '<div class="hint">No hay entregas tarde</div>';
+  $('#atiempo').innerHTML   = ati.length   ? ati.map(renderItem).join('')   : '<div class="hint">Aún no hay entregas registradas</div>';
+}
+
+/* ====== CARGA (con nombre desde REGISTRO y fallback a ASISTENCIA) ====== */
+async function cargarAlumnoPorID(id){
+  $('#student-view').style.display='none';
+  $('#alumno-nombre').textContent='Cargando…'; $('#alumno-id').textContent='';
+
+  await loadLinks();
+
+  const [asis, reg, pre] = await Promise.all([loadBlock('asistencia'), loadBlock('registro'), loadBlock('presets')]);
+
+  const entregas = parseRegistro(reg.cols, reg.rows);
+  const presets  = parsePresets(pre.cols, pre.rows);
+  let entAlumno  = entregas.filter(t => norm(t.id) === norm(id));
+
+  const nombreDeRegistro = entAlumno.find(e => e.nombre)?.nombre || '';
+
+  const uids   = new Map(entAlumno.filter(t => t.uidPreset).map(t => [t.uidPreset, t]));
+  const claves = new Map(entAlumno.filter(t => !t.uidPreset).map(t => [
+    [norm(t.materia), norm(String(t.numero).replace(/^trabajo\s*/i,'')),
+     norm(t.origen),  norm(t.pagina), normDate(t.fechaObjetivo)].join('|'), t
+  ]));
+
+  const faltantes=[], tarde=[], atiempo=[];
+  for (const p of presets){
+    let e = uids.get(p.uid);
+    if (!e){
+      const k = [norm(p.materia), norm(String(p.numero).replace(/^trabajo\s*/i,'')),
+                 norm(p.origen),  norm(p.pagina), normDate(p.fechaObjetivo)].join('|');
+      e = claves.get(k);
+    }
+    if (e) { (e.atrasoDias > 0 ? tarde : atiempo).push(p); } else { faltantes.push(p); }
+  }
+  ALL={faltantes,tarde,atiempo,presets};
+
+  const [w0,w1] = weekRange(new Date());
+  const aw = asistenciaAlumno(asis.cols, asis.rows, {id, nombre:nombreDeRegistro}, w0, w1);
+  const iNom = asis.cols.findIndex(c=>/^nombre/i.test(c));
+  let nombre = nombreDeRegistro;
+  if (aw.row && iNom>=0) nombre = String(aw.row[iNom]||'');
+  if (!nombre){
+    const iId=asis.cols.findIndex(c=>/^(id|matric)/i.test(c));
+    if (iId>=0 && iNom>=0){
+      const r=asis.rows.find(r=>norm(r[iId])===norm(id));
+      if (r) nombre=String(r[iNom]||'');
+    }
+  }
+  if (!nombre){ alert('No encontramos ese ID. Verifique que esté correcto (sin espacios) o contacte a la escuela.'); return; }
+
+  $('#alumno-nombre').textContent = nombre;
+  $('#alumno-id').textContent     = 'ID: ' + id;
+  $('#grupo-label').innerHTML     = `<span class="badgeb">👩‍🏫 Grupo: <b>${GROUP_LABEL}</b></span>`;
+
+  const hoy=new Date();
+  const a30 = asistenciaAlumno(asis.cols, asis.rows, {id, nombre:nombre}, ymd(new Date(hoy.getFullYear(),hoy.getMonth(),hoy.getDate()-30)), ymd(hoy));
+  const ah  = asistenciaHistorica(asis.cols, asis.rows, {id, nombre:nombre});
+
+  $('#stat-aswk').textContent   = aw.total  ? `${Math.round(aw.present/aw.total*100)}%  (${aw.present}/${aw.total})` : '–';
+  $('#stat-as30').textContent   = a30.total ? `${Math.round(a30.present/a30.total*100)}%  (${a30.present}/${a30.total})` : '–';
+  $('#stat-asHist').textContent = ah.total  ? `${Math.round(ah.present/ah.total*100)}%  (${ah.present}/${ah.total})` : '–';
+  $('#stat-faltHist').textContent = ah.total ? `${ah.total - ah.present}` : '–';
+
+  TRI='ALL'; setTriChips(); renderLists();
+
+  $('#student-view').style.display='block';
+  window.scrollTo({top:document.body.offsetTop, behavior:'smooth'});
+}
+
+/* ====== UI ====== */
+const themeBtn=$('#themeBtn');
+function applyTheme(t){document.documentElement.setAttribute('data-theme', t); themeBtn.textContent=(t==='dark'?'☀️ Claro':'🌙 Oscuro'); localStorage.setItem('familias_theme',t);}
+applyTheme(localStorage.getItem('familias_theme')||'light');
+themeBtn.onclick=()=>applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+
+$('#saveBtn').onclick=()=>{const v=$('#idInput').value.trim(); if(!v){alert('Escriba el ID escolar.'); return;} localStorage.setItem('familias_id',v); alert('Listo. Guardado en este dispositivo.');};
+$('#goBtn').onclick=async()=>{
+  const id=$('#idInput').value.trim().toUpperCase();
+  if(!/^ID[A-Z0-9]{6,}$/.test(id)){ alert('ID no válido. Revise que no tenga espacios ni letras minúsculas.'); return; }
+  try{ await cargarAlumnoPorID(id); } catch(e){ alert('No fue posible leer los datos: '+e.message); }
+};
+$('#idInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){ $('#goBtn').click(); }});
+const saved=localStorage.getItem('familias_id'); if(saved) $('#idInput').value=saved;
+$('#backBtn')?.addEventListener('click',()=>{ $('#student-view').style.display='none'; window.scrollTo({top:0,behavior:'smooth'}); });
+</script>
 </body>
 </html>
