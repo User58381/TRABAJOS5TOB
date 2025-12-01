@@ -1,3 +1,5 @@
+Te lo dejo completo con la corrección clave: ya no filtro por uid en parsePresets, así aunque la columna no se llame exactamente uidPreset los trabajos siguen entrando y se empatan por materia/número/origen/página, igual que en tu app.
+
 <!doctype html>
 <html lang="es" data-theme="light">
 <head>
@@ -114,7 +116,7 @@
 
       <div class="chart" aria-label="Resumen visual del trimestre">
         <div class="bar fal" id="bar-fal"><span class="lbl">⏳ Faltantes</span><span class="val" id="val-fal">0</span></div>
-        <div class="bar tar" id="bar-tar"><span class="lbl">🕒 Tarde</span><span class="val" id="val-tar">0</span></div>
+        <div class="bar tar" id="val-tar-wrap"><span class="lbl">🕒 Tarde</span><span class="val" id="val-tar">0</span></div>
         <div class="bar ati" id="bar-ati"><span class="lbl">✅ A tiempo</span><span class="val" id="val-ati">0</span></div>
       </div>
 
@@ -253,6 +255,7 @@ function parseRegistro(cols,rows){
     };
   });
 }
+
 function parsePresets(cols,rows){
   const iUID=cols.findIndex(c=>/uid[_ ]?preset/i.test(c));
   const iFO=cols.findIndex(c=>/fecha.*objetivo/i.test(c));
@@ -262,6 +265,8 @@ function parsePresets(cols,rows){
   const iOri=cols.findIndex(c=>/^origen$/i.test(c));
   const iPag=cols.findIndex(c=>/^p[aá]gina/i.test(c));
   const iNom=cols.findIndex(c=>/nombre.*trabajo/i.test(c));
+
+  // YA NO filtramos por uid: si no se detecta la columna de UID, igual usamos las filas
   return rows.map(r=>({
     uid:String((iUID>=0?r[iUID]:'')??'').trim(),
     fechaObjetivo:String((iFO>=0?r[iFO]:'')??'').trim(),
@@ -271,10 +276,10 @@ function parsePresets(cols,rows){
     origen:String((iOri>=0?r[iOri]:'')??'').trim(),
     pagina:String((iPag>=0?r[iPag]:'')??'').trim(),
     nombreTrabajo:String((iNom>=0?r[iNom]:'')??'').trim()
-  })).filter(p=>p.uid);
+  }));
 }
 
-/* ====== ASISTENCIA (corrigida: siempre cuenta todos los días del rango) ====== */
+/* ====== ASISTENCIA ====== */
 function asistenciaAlumno(cols,rows,ref,start,end){
   const iId=cols.findIndex(c=>/^(id|matric)/i.test(c));
   const iNom=cols.findIndex(c=>/^nombre/i.test(c));
@@ -359,7 +364,7 @@ function byTri(list){
 function renderBarChart({faltantes,tarde,atiempo}){
   const max=Math.max(faltantes,tarde,atiempo,1);
   const set=(id,val)=>{ const el=$(id); el.style.setProperty('--pct',(val/max).toFixed(3)); el.querySelector('.val').textContent=val; };
-  set('#bar-fal',faltantes); set('#bar-tar',tarde); set('#bar-ati',atiempo);
+  set('#bar-fal',faltantes); set('#val-tar-wrap',tarde); set('#bar-ati',atiempo);
 }
 function linksFor(uid){
   const rec = LINKMAP?.[uid];
@@ -407,7 +412,7 @@ async function cargarAlumnoPorID(id){
 
   const uids   = new Map(entAlumno.filter(t => t.uidPreset).map(t => [t.uidPreset, t]));
 
-  // Clave compuesta SIN fechaObjetivo (como en la app)
+  // clave compuesta sin fechaObjetivo
   const claves = new Map(entAlumno.filter(t => !t.uidPreset).map(t => [
     [
       norm(t.materia),
@@ -466,7 +471,7 @@ async function cargarAlumnoPorID(id){
   $('#stat-asHist').textContent = ah.total  ? `${Math.round(ah.present/ah.total*100)}%  (${ah.present}/${ah.total})` : '–';
   $('#stat-faltHist').textContent = ah.total ? `${ah.total - ah.present}` : '–';
 
-  TRI='M2'; // Siempre arrancar en Trimestre 2 al cargar alumno
+  TRI='M2';
   setTriChips();
   renderLists();
 
