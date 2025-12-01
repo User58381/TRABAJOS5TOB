@@ -236,11 +236,20 @@ function parseRegistro(cols,rows){
     const fecha=String(r[iF]??'').trim(); const fo=String((iFO>=0?r[iFO]:'')??'').trim()||fecha;
     const atraso = (()=>{ if(iAtr>=0 && r[iAtr]!=='' && r[iAtr]!=null) return +r[iAtr]||0;
       const d=new Date(fecha), o=new Date(fo); if(isNaN(+d)||isNaN(+o)) return 0; return Math.max(0, Math.round((d-o)/86400000));})();
-    return { uidPreset:String((iUID>=0?r[iUID]:'')??'').trim(), fecha, fechaObjetivo:fo, id:String((iID>=0?r[iID]:'')??'').trim(),
-      nombre:String((iNom>=0?r[iNom]:'')??'').trim(), materia:String((iMat>=0?r[iMat]:'')??'').trim(),
-      numero:String((iNum>=0?r[iNum]:'')??'').trim(), origen:String((iOri>=0?r[iOri]:'')??'').trim(),
-      pagina:String((iPag>=0?r[iPag]:'')??'').trim(), puntos:+((iPts>=0?r[iPts]:0)??0)||0,
-      atrasoDias:atraso, momento:String((iMom>=0?r[iMom]:'')??'').trim(), nombreTrabajo:String((iNomT>=0?r[iNomT]:'')??'').trim()
+    return {
+      uidPreset:String((iUID>=0?r[iUID]:'')??'').trim(),
+      fecha,
+      fechaObjetivo:fo,
+      id:String((iID>=0?r[iID]:'')??'').trim(),
+      nombre:String((iNom>=0?r[iNom]:'')??'').trim(),
+      materia:String((iMat>=0?r[iMat]:'')??'').trim(),
+      numero:String((iNum>=0?r[iNum]:'')??'').trim(),
+      origen:String((iOri>=0?r[iOri]:'')??'').trim(),
+      pagina:String((iPag>=0?r[iPag]:'')??'').trim(),
+      puntos:+((iPts>=0?r[iPts]:0)??0)||0,
+      atrasoDias:atraso,
+      momento:String((iMom>=0?r[iMom]:'')??'').trim(),
+      nombreTrabajo:String((iNomT>=0?r[iNomT]:'')??'').trim()
     };
   });
 }
@@ -253,11 +262,16 @@ function parsePresets(cols,rows){
   const iOri=cols.findIndex(c=>/^origen$/i.test(c));
   const iPag=cols.findIndex(c=>/^p[aá]gina/i.test(c));
   const iNom=cols.findIndex(c=>/nombre.*trabajo/i.test(c));
-  return rows.map(r=>({uid:String((iUID>=0?r[iUID]:'')??'').trim(),
-    fechaObjetivo:String((iFO>=0?r[iFO]:'')??'').trim(), momento:String((iMom>=0?r[iMom]:'')??'').trim(),
-    materia:String((iMat>=0?r[iMat]:'')??'').trim(), numero:String((iNum>=0?r[iNum]:'')??'').trim(),
-    origen:String((iOri>=0?r[iOri]:'')??'').trim(), pagina:String((iPag>=0?r[iPag]:'')??'').trim(),
-    nombreTrabajo:String((iNom>=0?r[iNom]:'')??'').trim()})).filter(p=>p.uid);
+  return rows.map(r=>({
+    uid:String((iUID>=0?r[iUID]:'')??'').trim(),
+    fechaObjetivo:String((iFO>=0?r[iFO]:'')??'').trim(),
+    momento:String((iMom>=0?r[iMom]:'')??'').trim(),
+    materia:String((iMat>=0?r[iMat]:'')??'').trim(),
+    numero:String((iNum>=0?r[iNum]:'')??'').trim(),
+    origen:String((iOri>=0?r[iOri]:'')??'').trim(),
+    pagina:String((iPag>=0?r[iPag]:'')??'').trim(),
+    nombreTrabajo:String((iNom>=0?r[iNom]:'')??'').trim()
+  })).filter(p=>p.uid);
 }
 
 /* ====== ASISTENCIA (corrigida: siempre cuenta todos los días del rango) ====== */
@@ -325,16 +339,23 @@ async function loadLinks(){
 }
 
 let ALL = {faltantes:[], tarde:[], atiempo:[], presets:[]};
-let TRI='M2'; // ← por defecto Trimestre 2
+let TRI='M2'; // Trimestre 2 por defecto
 
 function setTriChips(){
   const host=$('#tri-chips');
   const opts=[['ALL','Todo'],['M1','Trimestre 1'],['M2','Trimestre 2'],['M3','Trimestre 3']];
   host.innerHTML=opts.map(([v,l])=>`<button class="chip ${TRI===v?'active':''}" data-v="${v}">${l}</button>`).join('');
-  for(const b of host.querySelectorAll('.chip')) b.onclick=()=>{TRI=b.getAttribute('data-v'); setTriChips(); renderLists();};
+  for(const b of host.querySelectorAll('.chip')) b.onclick=()=>{
+    TRI=b.getAttribute('data-v');
+    setTriChips();
+    renderLists();
+  };
   $('#tri-subtitle').textContent='Resumen de '+({ALL:'Todo',M1:'Trimestre 1',M2:'Trimestre 2',M3:'Trimestre 3'}[TRI]);
 }
-function byTri(list){ if(TRI==='ALL') return list; return list.filter(x=>String(x.momento||'').toUpperCase()===TRI); }
+function byTri(list){
+  if(TRI==='ALL') return list;
+  return list.filter(x=>String(x.momento||'').toUpperCase()===TRI);
+}
 function renderBarChart({faltantes,tarde,atiempo}){
   const max=Math.max(faltantes,tarde,atiempo,1);
   const set=(id,val)=>{ const el=$(id); el.style.setProperty('--pct',(val/max).toFixed(3)); el.querySelector('.val').textContent=val; };
@@ -385,20 +406,35 @@ async function cargarAlumnoPorID(id){
   const nombreDeRegistro = entAlumno.find(e => e.nombre)?.nombre || '';
 
   const uids   = new Map(entAlumno.filter(t => t.uidPreset).map(t => [t.uidPreset, t]));
+
+  // Clave compuesta SIN fechaObjetivo (como en la app)
   const claves = new Map(entAlumno.filter(t => !t.uidPreset).map(t => [
-    [norm(t.materia), norm(String(t.numero).replace(/^trabajo\s*/i,'')),
-     norm(t.origen),  norm(t.pagina), normDate(t.fechaObjetivo)].join('|'), t
+    [
+      norm(t.materia),
+      norm(String(t.numero).replace(/^trabajo\s*/i,'')),
+      norm(t.origen),
+      norm(t.pagina)
+    ].join('|'),
+    t
   ]));
 
   const faltantes=[], tarde=[], atiempo=[];
   for (const p of presets){
     let e = uids.get(p.uid);
     if (!e){
-      const k = [norm(p.materia), norm(String(p.numero).replace(/^trabajo\s*/i,'')),
-                 norm(p.origen),  norm(p.pagina), normDate(p.fechaObjetivo)].join('|');
+      const k = [
+        norm(p.materia),
+        norm(String(p.numero).replace(/^trabajo\s*/i,'')),
+        norm(p.origen),
+        norm(p.pagina)
+      ].join('|');
       e = claves.get(k);
     }
-    if (e) { (e.atrasoDias > 0 ? tarde : atiempo).push(p); } else { faltantes.push(p); }
+    if (e) {
+      (e.atrasoDias > 0 ? tarde : atiempo).push(p);
+    } else {
+      faltantes.push(p);
+    }
   }
   ALL={faltantes,tarde,atiempo,presets};
 
@@ -430,8 +466,7 @@ async function cargarAlumnoPorID(id){
   $('#stat-asHist').textContent = ah.total  ? `${Math.round(ah.present/ah.total*100)}%  (${ah.present}/${ah.total})` : '–';
   $('#stat-faltHist').textContent = ah.total ? `${ah.total - ah.present}` : '–';
 
-  // ← aquí cambiamos el default al Trimestre 2
-  TRI='M2';
+  TRI='M2'; // Siempre arrancar en Trimestre 2 al cargar alumno
   setTriChips();
   renderLists();
 
@@ -441,19 +476,34 @@ async function cargarAlumnoPorID(id){
 
 /* ====== UI ====== */
 const themeBtn=$('#themeBtn');
-function applyTheme(t){document.documentElement.setAttribute('data-theme', t); themeBtn.textContent=(t==='dark'?'☀️ Claro':'🌙 Oscuro'); localStorage.setItem('familias_theme',t);}
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  themeBtn.textContent=(t==='dark'?'☀️ Claro':'🌙 Oscuro');
+  localStorage.setItem('familias_theme',t);
+}
 applyTheme(localStorage.getItem('familias_theme')||'light');
 themeBtn.onclick=()=>applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
 
-$('#saveBtn').onclick=()=>{const v=$('#idInput').value.trim(); if(!v){alert('Escriba el ID escolar.'); return;} localStorage.setItem('familias_id',v); alert('Listo. Guardado en este dispositivo.');};
+$('#saveBtn').onclick=()=>{
+  const v=$('#idInput').value.trim();
+  if(!v){alert('Escriba el ID escolar.'); return;}
+  localStorage.setItem('familias_id',v);
+  alert('Listo. Guardado en este dispositivo.');
+};
 $('#goBtn').onclick=async()=>{
   const id=$('#idInput').value.trim().toUpperCase();
-  if(!/^ID[A-Z0-9]{6,}$/.test(id)){ alert('ID no válido. Revise que no tenga espacios ni letras minúsculas.'); return; }
+  if(!/^ID[A-Z0-9]{6,}$/.test(id)){
+    alert('ID no válido. Revise que no tenga espacios ni letras minúsculas.');
+    return;
+  }
   try{ await cargarAlumnoPorID(id); } catch(e){ alert('No fue posible leer los datos: '+e.message); }
 };
 $('#idInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){ $('#goBtn').click(); }});
 const saved=localStorage.getItem('familias_id'); if(saved) $('#idInput').value=saved;
-$('#backBtn')?.addEventListener('click',()=>{ $('#student-view').style.display='none'; window.scrollTo({top:0,behavior:'smooth'}); });
+$('#backBtn')?.addEventListener('click',()=>{
+  $('#student-view').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+});
 </script>
 </body>
 </html>
