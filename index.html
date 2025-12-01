@@ -91,7 +91,7 @@
           <h2 id="alumno-nombre">Alumno</h2>
           <div class="hint" id="alumno-id"></div>
           <div class="hint" id="grupo-label" style="margin-top:4px"></div>
-          <div id="tri-subtitle" class="hint" style="margin-top:6px">Resumen de Todo</div>
+          <div id="tri-subtitle" class="hint" style="margin-top:6px">Resumen de Trimestre 2</div>
         </div>
         <div>
           <button id="backBtn" class="btn ghost">Cambiar de alumno</button>
@@ -277,7 +277,7 @@ function asistenciaAlumno(cols,rows,ref,start,end){
   let present=0,total=0;
   for(const i of dateCols){
     const v=row[i];
-    total++;                   // ← ahora SIEMPRE cuenta el día aunque esté vacío
+    total++;
     if(isPresent(v)) present++;
   }
   return {present,total,row};
@@ -295,14 +295,14 @@ function asistenciaHistorica(cols,rows,ref){
   let present=0,total=0;
   for(const i of dateCols){
     const v=row[i];
-    total++;                   // ← cuenta todos los días con encabezado de fecha
+    total++;
     if(isPresent(v)) present++;
   }
   return {present,total};
 }
 
 function weekRange(d){
-  const day=d.getDay(); const diff=(day===0?-6:1-day);      // lunes
+  const day=d.getDay(); const diff=(day===0?-6:1-day);
   const mon=new Date(d); mon.setDate(d.getDate()+diff); mon.setHours(0,0,0,0);
   const fri=new Date(mon); fri.setDate(mon.getDate()+4);
   return [ymd(mon), ymd(fri)];
@@ -325,7 +325,7 @@ async function loadLinks(){
 }
 
 let ALL = {faltantes:[], tarde:[], atiempo:[], presets:[]};
-let TRI='ALL';
+let TRI='M2'; // ← por defecto Trimestre 2
 
 function setTriChips(){
   const host=$('#tri-chips');
@@ -430,7 +430,10 @@ async function cargarAlumnoPorID(id){
   $('#stat-asHist').textContent = ah.total  ? `${Math.round(ah.present/ah.total*100)}%  (${ah.present}/${ah.total})` : '–';
   $('#stat-faltHist').textContent = ah.total ? `${ah.total - ah.present}` : '–';
 
-  TRI='ALL'; setTriChips(); renderLists();
+  // ← aquí cambiamos el default al Trimestre 2
+  TRI='M2';
+  setTriChips();
+  renderLists();
 
   $('#student-view').style.display='block';
   window.scrollTo({top:document.body.offsetTop, behavior:'smooth'});
